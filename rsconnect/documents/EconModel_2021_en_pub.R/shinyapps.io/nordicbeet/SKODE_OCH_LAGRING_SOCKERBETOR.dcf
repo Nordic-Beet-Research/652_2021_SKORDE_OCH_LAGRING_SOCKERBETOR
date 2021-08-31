@@ -1,0 +1,14 @@
+name: SKODE_OCH_LAGRING_SOCKERBETOR
+title: SKODE_OCH_LAGRING_SOCKERBETOR
+username:
+account: nordicbeet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4564683
+bundleId: 4984640
+url: https://nordicbeet.shinyapps.io/SKODE_OCH_LAGRING_SOCKERBETOR/
+when: 1630415537.77493
+lastSyncTime: 1630415537.77493
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: EconModel_2021_en.R|Translations.xlsx|www/NBR_NEG_2farg.png
