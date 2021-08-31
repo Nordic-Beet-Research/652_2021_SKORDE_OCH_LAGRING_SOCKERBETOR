@@ -88,7 +88,7 @@ values <- reactiveValues()
 
 {
   language_tab <- matrix(c(
-    "AAA", "SUGAR BEET HARVEST AND STORAGE - 2021 SWEDEN", "SKÖDE OCH LAGRING AV SOCKERBETOR - SVERIGE 2021",
+    "AAA", "SUGAR BEET HARVEST AND STORAGE - 2021 SWEDEN", "SKÖRDE OCH LAGRING AV SOCKERBETOR - SVERIGE 2021",
     "ATA", "Field", "Fält",
     "ATB", "Harvest", "Upptagning",
     "ATC", "Clamp", "Stuka",
