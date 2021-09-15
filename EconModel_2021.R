@@ -1134,7 +1134,7 @@ server <- function(input, output, session){
     #Volume bonus
     if (vol == T) full_tab$price_vol = kr_vol
     
-    #renhet bonus
+    #renhet bonus #### FIX FIX FIX FIX ####
     renhet_diff <- (renhet_p - ref_renhet)*100
     price_renhet <- renhet_diff * kr_renhet
     
@@ -1144,9 +1144,9 @@ server <- function(input, output, session){
     full_tab$price_clean <- full_tab$price_base_clean +  full_tab$price_bonus_clean
     
     # Delivered prices
-    full_tab$price_base_delivered <- full_tab$price_base_clean*renhet_p
-    full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*renhet_p
-    full_tab$price_delivered <- full_tab$price_clean*renhet_p
+    full_tab$price_base_delivered <- full_tab$price_base_clean*full_tab$renhet_pp_cum
+    full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*full_tab$renhet_pp_cum
+    full_tab$price_delivered <- full_tab$price_clean*full_tab$renhet_pp_cum
     
     # Ha prices
     full_tab$price_base_ha <- full_tab$price_base_delivered*full_tab$mass_kg_cum
