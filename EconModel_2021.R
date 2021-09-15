@@ -822,9 +822,9 @@ server <- function(input, output, session){
     harvest_date_p <- input$harvest_date
     delivery_date_p <- input$delivery_date
     
-    root_mass_factory <- full_tab_p$mass_kg_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
-    root_mass_harvest <- full_tab_p$mass_kg_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
-    root_mass_grown <- full_tab_p$mass_kg_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
+    root_mass_factory <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
+    root_mass_harvest <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
+    root_mass_grown <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
     
     root_mass_factory_field <- root_mass_factory*field_size_p
     root_mass_harvest_field <- root_mass_harvest*field_size_p
@@ -1095,28 +1095,6 @@ server <- function(input, output, session){
     ## Pol factor across whole period
     full_tab$pol_factor <- (full_tab$pol_cum - ref_pol*100)*kr_pol
     
-    # MASS LOSS
-    ## Clamp Mass Loss for given temp
-    full_tab <- merge(full_tab, mass_loss_tab_p, by="cum_temp")
-    full_tab$clamp_mass_loss_kg_cum <- full_tab$clamp_mass_loss_pc_cum*root_yield_p/100
-    clamp_mass_loss_kg_cum_ref <- full_tab$clamp_mass_loss_kg_cum[which(full_tab$date_full==day0)]
-    full_tab$clamp_mass_loss_kg_rel_day0 <- full_tab$clamp_mass_loss_kg_cum - clamp_mass_loss_kg_cum_ref
-    
-    ## Mass loss at harvest
-    harvest_loss <- harvest_loss_tab$harvest_loss_tn[which(harvest_loss_tab$root_tip_break_perc == root_tip_break_pc_p)]
-    if(day0 >= harvest_date) full_tab$harvest_mass_loss <- ifelse(full_tab$date_full < harvest_date, harvest_loss, 0)
-    if(day0 < harvest_date) full_tab$harvest_mass_loss <- ifelse(full_tab$date_full < harvest_date, 0, harvest_loss*(-1))
-    
-    ## Mass gain under late season growth
-    full_tab$LSG_mass_loss_pc_cum <- ifelse(full_tab$date_full <= harvest_date, full_tab$LSG_mass_loss_pc_cum, full_tab$LSG_mass_loss_pc_cum[which(full_tab$date_full == harvest_date)])
-    full_tab$LSG_mass_loss_kg_cum <- full_tab$LSG_mass_loss_pc_cum*root_yield_p/100*(-1)
-    LSG_mass_loss_kg_cum_ref <- full_tab$LSG_mass_loss_kg_cum[which(full_tab$date_full==day0)]
-    full_tab$LSG_mass_loss_kg_rel_day0 <- full_tab$LSG_mass_loss_kg_cum - LSG_mass_loss_kg_cum_ref
-    
-    ## Total daily mass change (kg)
-    full_tab$mass_loss_kg_rel_day0 <- full_tab$clamp_mass_loss_kg_rel_day0 + full_tab$LSG_mass_loss_kg_rel_day0 - full_tab$harvest_mass_loss
-    full_tab$mass_kg_cum <- root_yield_p - full_tab$mass_loss_kg_rel_day0
-    
     # RENHET LOSS
     full_tab$days_post_harvest <- 1
     full_tab$days_post_harvest[which(full_tab$date_full < harvest_date)] <- 0
@@ -1125,8 +1103,35 @@ server <- function(input, output, session){
     renhet_loss_pp_cum_ref <- full_tab$renhet_loss_pp_cum[which(full_tab$date_full==day0)]
     full_tab$renhet_pp_cum <- (renhet_p - renhet_loss_pp_cum_ref + full_tab$renhet_loss_pp_cum)*100
     
+    # MASS LOSS
+    ## Mass change (gain) under late season growth
+    full_tab$LSG_mass_loss_pc_cum <- ifelse(full_tab$date_full <= harvest_date, full_tab$LSG_mass_loss_pc_cum, full_tab$LSG_mass_loss_pc_cum[which(full_tab$date_full == harvest_date)])
+    full_tab$LSG_mass_loss_kg_cum <- full_tab$LSG_mass_loss_pc_cum*root_yield_p/100*(-1)
+    LSG_mass_loss_kg_cum_ref <- full_tab$LSG_mass_loss_kg_cum[which(full_tab$date_full==day0)]
+    full_tab$LSG_mass_loss_kg_rel_day0 <- full_tab$LSG_mass_loss_kg_cum - LSG_mass_loss_kg_cum_ref    
+    
+    ## Mass change (loss) at harvest
+    harvest_loss <- harvest_loss_tab$harvest_loss_tn[which(harvest_loss_tab$root_tip_break_perc == root_tip_break_pc_p)]
+    if(day0 >= harvest_date) full_tab$harvest_mass_loss <- ifelse(full_tab$date_full < harvest_date, harvest_loss, 0)
+    if(day0 < harvest_date) full_tab$harvest_mass_loss <- ifelse(full_tab$date_full < harvest_date, 0, harvest_loss*(-1))    
+    
+    ## Mass change (loss) in clamp through dehydration for given temp
+    full_tab <- merge(full_tab, mass_loss_tab_p, by="cum_temp")
+    full_tab$clamp_mass_loss_kg_cum <- full_tab$clamp_mass_loss_pc_cum*root_yield_p/100
+    clamp_mass_loss_kg_cum_ref <- full_tab$clamp_mass_loss_kg_cum[which(full_tab$date_full==day0)]
+    full_tab$clamp_mass_loss_kg_rel_day0 <- full_tab$clamp_mass_loss_kg_cum - clamp_mass_loss_kg_cum_ref
+
+    ## Mass change (loss) in clamp through rots
+    ### % change in renhent (%-points) multiplied by mass at harvest x mass loss through dehydration
+    renhet_pc_cum_ref <- full_tab$renhet_pp_cum[which(full_tab$date_full == harvest_date)]
+    full_tab$renhet_pc_cum <- full_tab$renhet_pp_cum/renhet_pc_cum_ref
+    
+    ## Total daily mass change (kg)
+    full_tab$mass_loss_kg_rel_day0 <- full_tab$clamp_mass_loss_kg_rel_day0 + full_tab$LSG_mass_loss_kg_rel_day0 - full_tab$harvest_mass_loss
+    full_tab$mass_tn_cum <- (root_yield_p - full_tab$mass_loss_kg_rel_day0)*full_tab$renhet_pc_cum
+    
     ## SUGAR YIELD
-    full_tab$sug_cum <- full_tab$pol_cum/100*full_tab$mass_kg_cum
+    full_tab$sug_cum <- full_tab$pol_cum/100*full_tab$mass_tn_cum
     
     #TT bonus
     full_tab$price_TT[full_tab$date_full < as.POSIXct(cover_date)+7] <- 0
@@ -1135,23 +1140,23 @@ server <- function(input, output, session){
     if (vol == T) full_tab$price_vol = kr_vol
     
     #renhet bonus #### FIX FIX FIX FIX ####
-    renhet_diff <- (renhet_p - ref_renhet)*100
-    price_renhet <- renhet_diff * kr_renhet
+    full_tab$renhet_diff <- full_tab$renhet_pp_cum - (ref_renhet*100)
+    full_tab$price_renhet <- full_tab$renhet_diff * kr_renhet
     
     # Clean prices
     full_tab$price_base_clean <- kr_tonne+kr_tonne*full_tab$pol_factor/100
-    full_tab$price_bonus_clean <- (full_tab$price_early + full_tab$price_late + full_tab$price_TT + full_tab$price_vol + price_renhet)
+    full_tab$price_bonus_clean <- (full_tab$price_early + full_tab$price_late + full_tab$price_TT + full_tab$price_vol + full_tab$price_renhet)
     full_tab$price_clean <- full_tab$price_base_clean +  full_tab$price_bonus_clean
     
     # Delivered prices
-    full_tab$price_base_delivered <- full_tab$price_base_clean*full_tab$renhet_pp_cum
-    full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*full_tab$renhet_pp_cum
-    full_tab$price_delivered <- full_tab$price_clean*full_tab$renhet_pp_cum
+    full_tab$price_base_delivered <- full_tab$price_base_clean*(full_tab$renhet_pp_cum/100)
+    full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*(full_tab$renhet_pp_cum/100)
+    full_tab$price_delivered <- full_tab$price_clean*(full_tab$renhet_pp_cum/100)
     
     # Ha prices
-    full_tab$price_base_ha <- full_tab$price_base_delivered*full_tab$mass_kg_cum
-    full_tab$price_bonus_ha <- full_tab$price_bonus_delivered*full_tab$mass_kg_cum
-    full_tab$price_ha <- full_tab$price_delivered*full_tab$mass_kg_cum
+    full_tab$price_base_ha <- full_tab$price_base_clean*full_tab$mass_tn_cum
+    full_tab$price_bonus_ha <- full_tab$price_bonus_clean*full_tab$mass_tn_cum
+    full_tab$price_ha <- full_tab$price_clean*full_tab$mass_tn_cum
 
     # Field prices
     full_tab$price_base_field <- full_tab$price_base_ha*field_size
@@ -1176,7 +1181,7 @@ server <- function(input, output, session){
     delivery_date <- as.POSIXct(input$delivery_date, tz = "UTC", format = "%Y-%m-%d")
     
     # Define summary table - columns
-    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_kg_cum","sug_cum", "renhet_pp_cum")
+    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_tn_cum","sug_cum", "renhet_pp_cum")
     if("CL" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_clean","price_bonus_clean","price_clean")
     if("DE" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_delivered","price_bonus_delivered","price_delivered")
     if("HA" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_ha","price_bonus_ha","price_ha")
@@ -1381,7 +1386,7 @@ server <- function(input, output, session){
 
   output$summary_graph_mass <- plotly::renderPlotly({
     ggplot(summary_tab(), aes(x=date_full)) + 
-      geom_line(aes(y=mass_kg_cum, color = values$IDJ), size = 1) +
+      geom_line(aes(y=mass_tn_cum, color = values$IDJ), size = 1) +
       geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
       geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
       scale_colour_manual("", 
