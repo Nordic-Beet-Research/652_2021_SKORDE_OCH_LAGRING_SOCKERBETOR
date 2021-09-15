@@ -560,14 +560,9 @@ ui <- fluidPage(
              ),
              fluidRow(
                column(12, h4("IMPROVEMENTS"),
-                "The following improvements are on the to-do list:", br(),
-                "- Allow the price schedule to change to reflect those of recent years.",br(),
-                "- Have a 'simplified version' tab, in which some outputs are just set to defaults and some outputs disappear.",br(),
-                "- Introduce a model of dirt-tare. This would probably be something like an industry average, with spikes after rainfall events.", br(),
-                "- Improve the cost side of the equation, starting with the Delivery tab.",br(),
-                "- Introduce more factors that we know matter (eg, irrigation, Ca).",
+                "Ser document ",
                 br(),br(),
-                "If you have others, please contact William English as we@nbrf.nu")
+                "Skickar dina förslag till William English: we@nbrf.nu")
              )
       
     ),
