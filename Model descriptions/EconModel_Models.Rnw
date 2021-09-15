@@ -12,53 +12,73 @@
 
 \pagebreak
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% I FÄLTET
+
 \section{I FÄLTET}
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%
+  % SEN TILLVÄXT - POL
+  \subsection{SEN TILLVÄXT - POL}
 
-\subsection{SEN TILVÄXT - POL}
+    \begin{equation}
+      ST_P = 
+      \begin{cases}
+        0.010 & \text{if date < 15 Nov}\\
+        0.005 & \text{if date $\geq$ 15 Nov and $\leq$ 30 Nov}\\
+        0.000 & \text{if date > 30 Nov}
+      \end{cases}
+    \end{equation}
 
-\begin{equation}
-ST_P = 
-\begin{cases}
-0.01 & \text{if date < 15 Nov}\\
-0.05 & \text{if date $\geq$ 15 Nov and $\leq$ 30 Nov}\\
-0.00 & \text{if date > 30 Nov}
-\end{cases}
-\end{equation}
+    \subsubsection{Källa}
+    An educated guess
 
-\subsubsection{Källa}
-An educated guess
+    \subsubsection{Planerade förbättringar}
+    Build out proper, weather depended growth model. This will probably follow the work done by the BBRO.
+  
+  %%%%%%%%%%%%%%%%%%%%%%%%%%
+  % SEN TILLVÄXT - REN BETOR
+  \subsection{SEN TILLVÄXT - REN BETOR}
 
-\subsubsection{Planerade förbättringar}
-Build out proper, weather depended growth model. This will probably follow the work done by the BBRO.
+    \begin{equation}
+      ST_{RB} = 
+    \end{equation}
 
-\subsection{SEN TILVÄXT - REN BETOR}
+    \subsubsection{Planerade förbättringar}
 
-\begin{equation}
-ST_{RB} = 
-\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% UPPTAGNING
 
-\subsubsection{Planerade förbättringar}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LAGRNING
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LEVERANS
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PRODUCTION AND PAYMENT
 
 \pagebreak
 \section{PRODUCTION OCH BETALNING}
 
-\subsection{RENHET}
+  \subsection{RENHET}
 
-\begin{equation}
-\frac{dRenhet}{dD} =
-\begin{cases}
-0 & \text{D} < 20\\
--0,0022*D + 0,0438 & \text{D $\geq 20$}
-\end{cases}
-\end{equation}
+  \begin{equation}
+    \frac{dRenhet}{dD} =
+    \begin{cases}
+      0 & \text{D} < 20\\
+      -0,0022*D + 0,0438 & \text{D $\geq 20$}
+    \end{cases}
+  \end{equation}
 
-Where:\\
-\hangindent=1.5cm
-Renhet är procent enheter\\
-D = day after harvest\\
-$R^2 = 0,9188$
+  Where:\\
+  \hangindent=1.5cm
+  Renhet är procent enheter\\
+  D = day after harvest\\
+  $R^2 = 0,9188$
 
-\subsubsection{Källa}
-Agrilog - Sweden, 2020. 
+    \subsubsection{Källa}
+    Agrilog - Sweden, 2020. 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
