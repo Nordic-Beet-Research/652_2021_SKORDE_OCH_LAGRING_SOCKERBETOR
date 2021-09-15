@@ -1,0 +1,14 @@
+name: SKORDE_OCH_LAGRING_SOCKERBETOR
+title: SKORDE_OCH_LAGRING_SOCKERBETOR
+username:
+account: nordicbeet
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4567303
+bundleId: 4985942
+url: https://nordicbeet.shinyapps.io/SKORDE_OCH_LAGRING_SOCKERBETOR/
+when: 1630437679.66568
+lastSyncTime: 1630437679.66568
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: EconModel_2021.R|Translations.xlsx|www/NBR_NEG_2farg.png
