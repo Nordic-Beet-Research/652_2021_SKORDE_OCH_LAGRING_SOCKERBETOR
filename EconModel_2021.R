@@ -122,9 +122,18 @@ yr2020 <- c(14.1,13.7,15.7,16.0,17.3,18.1,14.4,10.1,10.5,11.1,11.3,12.9,13.4,14.
 temp_tab_historical <- data.frame(yr2016,yr2017,yr2018,yr2019,yr2020)
 
 root_tip_break_perc <- seq(0,100,5)
+
+# HARVEST LOSS MODEL
 #harvest_loss_tn <- c(rep(0.5,5),rep(1,4),rep(2,4),rep(3,4),rep(4,4))
 harvest_loss_tn <- 2*(1.902e-4*root_tip_break_perc^2 + 2.254e-2*root_tip_break_perc) + 0.25
 harvest_loss_tab <- data.frame(root_tip_break_perc,harvest_loss_tn)
+
+# RENHET LOSS MODEL
+days_post_harvest <- seq(0,150)
+renhet_loss_pp <- (days_post_harvest*(-0.0022)+0.0438)/100
+renhet_loss_mdl <- data.frame(days_post_harvest, renhet_loss_pp)
+renhet_loss_mdl$renhet_loss_pp[which(renhet_loss_mdl$renhet_loss_pp >= 0)] <- 0
+renhet_loss_mdl$renhet_loss_pp_cum <- cumsum(renhet_loss_mdl$renhet_loss_pp)
 
 lang_col <<- 3
 
@@ -293,6 +302,7 @@ values <- reactiveValues()
     "HTR", "Base price - field", "Baspris per fält",
     "HTS", "Bonus - field", "Bonus per fält",
     "HTT", "Payment - field", " per fält",
+    "HTU", "Cleanness (%)", "Renhet (%)", 
     
     
     "IAA", "PRODUCTION - CHARTS", "PRODUKTION - DIAGRAM",
@@ -313,6 +323,10 @@ values <- reactiveValues()
     "IDO", "Degree days (°Cd)", "Daggrader(°Cd)",
     "IDP", "Date", "Datum",
     "IDQ", "CLAMP TEMPERATURE", "STUKATEMPERATUR",
+    "IDR", "Cleaness", "Renhet",
+    "IDS", "Cleanness (%)", "Renhet (%)",
+    "IDT", "Date", "Datum",
+    "IDU", "CLEANNESS", "RENHET",
     
     
     "JAA", "ECONOMY - CHARTS", "EKONOMI - DIAGRAM",
@@ -559,8 +573,8 @@ ui <- fluidPage(
                )
              ),
              fluidRow(
-               column(12, h4("IMPROVEMENTS"),
-                "Ser document ",
+               column(12, h4("FÖRBÄTTRINGAR OCH DOKUMENTATION"),
+                "Ser dokument på", tags$a(href="https://github.com/Nordic-Beet-Research/SKORDE_OCH_LAGRING_SOCKERBETOR/blob/30d4b2f6faf02ce1d7f13e83d9c000ac533ac0fc/Model%20descriptions/EconModel_Models.pdf","Github"),
                 br(),br(),
                 "Skickar dina förslag till William English: we@nbrf.nu")
              )
@@ -735,6 +749,11 @@ ui <- fluidPage(
              fluidRow(
                column(6,plotly::plotlyOutput("summary_graph_mass")),
                column(6,plotly::plotlyOutput("summary_graph_temp")),
+               style = 'margin-top:30px'
+             ),
+             fluidRow(
+               column(6,plotly::plotlyOutput("summary_graph_renhet")),
+               column(6,),
                style = 'margin-top:30px'
              )
     ),
@@ -925,6 +944,20 @@ server <- function(input, output, session){
     temp_tab
   })
   
+  # HARVEST LOSS
+  summary_harvest_loss <- reactive({
+    root_tip_break_pc_p <- input$root_tip_break_pc
+    root_harvest_p <- data.frame(root_harvest_tab())[3,3]
+    
+    harvest_loss_tn_summary <- harvest_loss_tab$harvest_loss_tn[which(harvest_loss_tab$root_tip_break_perc == root_tip_break_pc_p)]
+    harvest_loss_pc_summary <- harvest_loss_tn_summary/root_harvest_p*100
+    
+    summary_harvest_loss <- matrix(c(harvest_loss_tn_summary,harvest_loss_pc_summary ), nrow = 1)
+    colnames(summary_harvest_loss) <- c(values$DTA, values$DTB)
+    
+    summary_harvest_loss
+  })
+  
   # SUGAR LOSS FACTOR
   # Get model factor
   factor <- reactive({
@@ -973,20 +1006,6 @@ server <- function(input, output, session){
     
   })
   
-  # HARVEST LOSS
-  summary_harvest_loss <- reactive({
-    root_tip_break_pc_p <- input$root_tip_break_pc
-    root_harvest_p <- data.frame(root_harvest_tab())[3,3]
-    
-    harvest_loss_tn_summary <- harvest_loss_tab$harvest_loss_tn[which(harvest_loss_tab$root_tip_break_perc == root_tip_break_pc_p)]
-    harvest_loss_pc_summary <- harvest_loss_tn_summary/root_harvest_p*100
-    
-    summary_harvest_loss <- matrix(c(harvest_loss_tn_summary,harvest_loss_pc_summary ), nrow = 1)
-    colnames(summary_harvest_loss) <- c(values$DTA, values$DTB)
-    
-    summary_harvest_loss
-  })
-  
   # Delivery cost table
   
   output$delivery_cost_tab <- renderTable({
@@ -1029,7 +1048,7 @@ server <- function(input, output, session){
     cover_date <- as.POSIXct(input$cover_date, tz = "UTC", format = "%Y-%m-%d")
     day0 <-  as.POSIXct(input$prod_data_date, tz = "UTC", format = "%Y-%m-%d")
     kr_tonne <- input$price
-    renhet <- input$renhet/100
+    renhet_p <- input$renhet/100
     pol_p <- input$pol
     root_yield_p <- input$root_yield
     vol <- input$vol
@@ -1097,7 +1116,15 @@ server <- function(input, output, session){
     ## Total daily mass change (kg)
     full_tab$mass_loss_kg_rel_day0 <- full_tab$clamp_mass_loss_kg_rel_day0 + full_tab$LSG_mass_loss_kg_rel_day0 - full_tab$harvest_mass_loss
     full_tab$mass_kg_cum <- root_yield_p - full_tab$mass_loss_kg_rel_day0
-
+    
+    # RENHET LOSS
+    full_tab$days_post_harvest <- 1
+    full_tab$days_post_harvest[which(full_tab$date_full < harvest_date)] <- 0
+    full_tab$days_post_harvest <- cumsum(full_tab$days_post_harvest)
+    full_tab <- merge(full_tab, renhet_loss_mdl, by="days_post_harvest")
+    renhet_loss_pp_cum_ref <- full_tab$renhet_loss_pp_cum[which(full_tab$date_full==day0)]
+    full_tab$renhet_pp_cum <- (renhet_p - renhet_loss_pp_cum_ref + full_tab$renhet_loss_pp_cum)*100
+    
     ## SUGAR YIELD
     full_tab$sug_cum <- full_tab$pol_cum/100*full_tab$mass_kg_cum
     
@@ -1108,7 +1135,7 @@ server <- function(input, output, session){
     if (vol == T) full_tab$price_vol = kr_vol
     
     #renhet bonus
-    renhet_diff <- (renhet - ref_renhet)*100
+    renhet_diff <- (renhet_p - ref_renhet)*100
     price_renhet <- renhet_diff * kr_renhet
     
     # Clean prices
@@ -1117,9 +1144,9 @@ server <- function(input, output, session){
     full_tab$price_clean <- full_tab$price_base_clean +  full_tab$price_bonus_clean
     
     # Delivered prices
-    full_tab$price_base_delivered <- full_tab$price_base_clean*renhet
-    full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*renhet
-    full_tab$price_delivered <- full_tab$price_clean*renhet
+    full_tab$price_base_delivered <- full_tab$price_base_clean*renhet_p
+    full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*renhet_p
+    full_tab$price_delivered <- full_tab$price_clean*renhet_p
     
     # Ha prices
     full_tab$price_base_ha <- full_tab$price_base_delivered*full_tab$mass_kg_cum
@@ -1149,7 +1176,7 @@ server <- function(input, output, session){
     delivery_date <- as.POSIXct(input$delivery_date, tz = "UTC", format = "%Y-%m-%d")
     
     # Define summary table - columns
-    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_kg_cum","sug_cum")
+    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_kg_cum","sug_cum", "renhet_pp_cum")
     if("CL" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_clean","price_bonus_clean","price_clean")
     if("DE" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_delivered","price_bonus_delivered","price_delivered")
     if("HA" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_ha","price_bonus_ha","price_ha")
@@ -1183,7 +1210,7 @@ server <- function(input, output, session){
     # input from required inputs
     summary_tab_cols <- input$summary_tab_show
     
-    summary_tab_names <- c(values$HTA, values$HTB, values$HTC, values$HTD, values$HTE, values$HTF, values$HTG, values$HTH)
+    summary_tab_names <- c(values$HTA, values$HTB, values$HTC, values$HTD, values$HTE, values$HTF, values$HTG, values$HTH, values$HTU)
     if("CL" %in% summary_tab_cols) summary_tab_names <- c(summary_tab_names, values$HTI, values$HTJ, values$HTK)
     if("DE" %in% summary_tab_cols) summary_tab_names <- c(summary_tab_names, values$HTL, values$HTM, values$HTN)
     if("HA" %in% summary_tab_cols) summary_tab_names <- c(summary_tab_names, values$HTO, values$HTP, values$HTQ)
@@ -1379,6 +1406,21 @@ server <- function(input, output, session){
       ylab(values$IDO) + 
       xlab(values$IDP) +
       labs(title = values$IDQ) +
+      theme(plot.title = element_text(size=15, face="bold.italic", colour = "#4A4C64"), 
+            legend.position="bottom")
+  })
+  
+  output$summary_graph_renhet <- plotly::renderPlotly({
+    ggplot(summary_tab(), aes(x=date_full)) + 
+      geom_line(aes(y=renhet_pp_cum, color = values$IDR), size = 1) +
+      geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
+      geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
+      scale_colour_manual("", 
+                          breaks = c(values$IDR),
+                          values = c("Renhet"="#1C9C82")) +
+      ylab(values$IDS) + 
+      xlab(values$IDT) +
+      labs(title = values$IDU) +
       theme(plot.title = element_text(size=15, face="bold.italic", colour = "#4A4C64"), 
             legend.position="bottom")
   })

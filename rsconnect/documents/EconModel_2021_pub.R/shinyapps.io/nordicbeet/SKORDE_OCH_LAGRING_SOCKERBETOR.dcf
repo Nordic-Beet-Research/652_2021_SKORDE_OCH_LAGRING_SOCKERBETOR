@@ -5,10 +5,10 @@ account: nordicbeet
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4567303
-bundleId: 4985942
+bundleId: 5035598
 url: https://nordicbeet.shinyapps.io/SKORDE_OCH_LAGRING_SOCKERBETOR/
-when: 1630437679.66568
-lastSyncTime: 1630437679.66568
+when: 1631708854.50034
+lastSyncTime: 1631708854.50034
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: EconModel_2021.R|Translations.xlsx|www/NBR_NEG_2farg.png
+ignoredFiles: EconModel_2021.R|Translations.xlsx|www/NBR_NEG_2farg.png|Model descriptions
