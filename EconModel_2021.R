@@ -586,6 +586,7 @@ ui <- fluidPage(
              fluidRow(
                column(12, h4("FÖRBÄTTRINGAR OCH DOKUMENTATION"),
                 "Ser dokument på", tags$a(href="https://github.com/Nordic-Beet-Research/SKORDE_OCH_LAGRING_SOCKERBETOR/blob/30d4b2f6faf02ce1d7f13e83d9c000ac533ac0fc/Model%20descriptions/EconModel_Models.pdf","Github"),
+                "Ser dokument på", tags$a(href="https://github.com/Nordic-Beet-Research/SKORDE_OCH_LAGRING_SOCKERBETOR/blob/0bf023d60da052d255a2bd8b8638df35d6b5d074/Model%20descriptions/EconModel_Models.pdf","Github"),
                 br(),br(),
                 "Skickar dina förslag till William English: we@nbrf.nu")
              )
