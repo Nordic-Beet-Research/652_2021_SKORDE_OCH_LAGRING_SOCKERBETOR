@@ -86,6 +86,13 @@ renhet_loss_mdl <- data.frame(days_post_harvest, renhet_loss_pp)
 renhet_loss_mdl$renhet_loss_pp[which(renhet_loss_mdl$renhet_loss_pp >= 0)] <- 0
 renhet_loss_mdl$renhet_loss_pp_cum <- cumsum(renhet_loss_mdl$renhet_loss_pp)
 
+# LEVERANS ORENHETER KOSTNADER
+oren_km <- seq(1,240)
+oren_sek <- c("23.74	24.47	25.19	25.92	26.66	27.38	28.11	28.84	29.56	30.29	31.01	31.74	32.47	33.19	33.92	34.65	35.37	36.1	36.83	37.55	38.28	39	39.73	40.46	41.18	42	42.81	43.63	44.44	45.25	46.08	46.91	47.73	48.56	49.39	50.21	51.04	51.87	52.69	53.52	54.34	55.17	56	56.82	57.65	58.49	59.33	60.17	61.01	61.85	62.68	63.52	64.36	65.2	66.04	66.88	67.72	68.56	69.4	70.24	71.16	72.09	73.02	73.94	74.87	75.81	76.75	77.69	78.63	79.56	80.45	81.34	82.23	83.12	84.01	84.86	85.71	86.57	87.42	88.27	89.12	89.97	90.81	91.66	92.51	93.36	94.22	95.07	95.92	96.76	97.61	98.46	99.3	100.15	101	101.84	102.69	103.55	104.38	105.24	106.09	106.93	107.78	108.63	109.47	110.32	111.17	112.01	112.86	113.71	114.55	115.39	116.23	117.07	117.91	118.75	119.59	120.43	121.27	122.1	122.94	123.78	124.62	125.46	126.3	127.14	127.96	128.79	129.62	130.44	131.27	132.03	132.8	133.56	134.33	135.09	135.85	136.62	137.38	138.15	138.85	139.55	140.25	140.95	141.65	142.29	142.93	143.48	143.94	144.41	144.87	145.33	145.8	146.26	146.72	147.19	147.65	148.11	148.58	149.04	149.5	149.97	150.43	150.89	151.36	151.82	152.28	152.75	153.21	153.67	154.14	154.6	155.06	155.53	155.99	156.45	156.92	157.38	157.84	158.31	158.77	159.23	159.7	160.25	160.8	161.35	161.9	162.45	163	163.55	164.1	164.66	165.21	165.76	166.22	166.68	167.15	167.61	168.07	168.54	169	169.46	169.93	170.39	170.85	171.32	171.78	172.24	172.71	173.17	173.63	174.1	174.56	175.02	175.49	175.95	176.41	176.88	177.34	177.8	178.27	178.73	179.19	179.66	180.12	180.45	180.65	180.85	181.05	181.25	181.45	181.65	181.85	182.05	182.25	182.45	182.65	182.85	183.05	183.25")
+oren_sek <- as.numeric(unlist(strsplit(oren_sek, "\t")))
+oren_tab <- data.frame(oren_km, oren_sek)
+
+# LANGUAGE
 lang_col <<- 3
 
 ###############################################
@@ -191,15 +198,18 @@ values <- reactiveValues()
     "FAB", "DELIVERY", "LEVERANS",
     "FAC", "Delivery date", "Leveransdatum",
     "FAD", "Distance to deliver (mil)", "Avstånd till fabrik (mil)",
-    "FAE", "Cost for delivery", "Leveranskostnad",
+    "FAE", "Cost for delivery", "Renbetor leveranskostnad (utöver 8 mil)",
     "FAF", "Delivery costs", "Leveranskostnader",
-    "FTA", "Field", "Fält",
-    "FTB", "Mil", "Mil",
-    "FTC", "Tonne", "Ton",
-    "FTD", "Tonnes per...", "Ton per ...",
-    "FTE", "Cost per ... (SEK)", "Kostnad per... (SEK)",
-    "FTF", "Cost per clean tonne (SEK)", "Kostnad per ton rena betor (SEK)",
-    "FTG", "Cost of soil transport (SEK)", "Kostnad för jordtransport (SEK)",
+    "FTA", "Dirt", "Orenheter",
+    "FTB", "Clean beet", "Renbetor",
+    "FTC", "Total", "Total",
+    "FTD", "Tonne", "Ton",
+    "FTE", "t / ha", "t / ha",
+    "FTE", "Mil", "Mil",
+    "FTE", "SEK", "SEK",
+    "FTE", "SEK / ha", "SEK / ha",
+    "FTE", "SEK / t", "SEK / t",
+    "FTE", "SEK / mil", "SEK / mil",
     
     
     "GAA", "PROD./ PAYMENT", "PROD./ BETALNING",
@@ -228,6 +238,7 @@ values <- reactiveValues()
     "GTM", "Bonuses", "Bonus",
     "GTN", "Total payment", "Total betalning",
     "GTO", "Cleanness (%)","Renhet (%)",
+    
     
     "HAA", "SUMMARY TABLE", "SAMMANFATTNING - TAB",
     "HAB", "Restrict data start date to harvest date", "Begränsa data  till upptagningsdatum",
@@ -629,10 +640,10 @@ ui <- fluidPage(
                  ),
                  dateInput("delivery_date",isolate(values$FAC),value = "2022-01-15"),
                  sliderInput("delivery_distance",isolate(values$FAD),min=1,max=20,step=0.1,value=5),
-                 sliderInput("delivery_cost",isolate(values$FAE),min=1000,max=200000,value=5000)
+                 sliderInput("delivery_cost",isolate(values$FAE),min=0,max=200000,value=0)
                ),
                mainPanel(
-                 column(12, h4(isolate(values$FAF)), tableOutput("delivery_cost_tab"), style = "margin-top: 125px")
+                 column(12, h4(isolate(values$FAF)), tableOutput("delivery_cost_tab"), style = "margin-top: 15px")
                )
              )
              
@@ -964,28 +975,53 @@ server <- function(input, output, session){
   
   # Delivery cost table
   
-  output$delivery_cost_tab <- renderTable({
+  delivery_cost_tab <- reactive({
     root_harvest_tab_p <- data.frame(root_harvest_tab())
-    root_harvest_p <- root_harvest_tab_p[3,4]
-    root_yield_p <- root_harvest_tab_p[3,3]
+    sek_ren_tot <- input$delivery_cost
+    delivery_distance_mil_p <- input$delivery_distance
+    field_size_p <- input$field_size
     
-    delivery_cost_field_clean <- input$delivery_cost / (input$renhet/100)
-    delivery_cost_field_soil <- input$delivery_cost * (1 - (input$renhet/100))
-    delivery_tn_mil <- root_yield_p / input$delivery_distance
-    delivery_cost_mil <- input$delivery_cost / input$delivery_distance
-    delivery_cost_mil_clean <- delivery_cost_mil / (input$renhet/100)
-    delivery_cost_mil_soil <- delivery_cost_mil * (1 - (input$renhet/100))
-    delivery_cost_tn <- input$delivery_cost / root_harvest_p
-    delivery_cost_tn_clean <- delivery_cost_tn / (input$renhet/100)
-    delivery_cost_tn_soil <- delivery_cost_tn * (1 - (input$renhet/100))
-    delivery_cost_tab <- matrix(c(root_harvest_p, input$delivery_cost, delivery_cost_field_clean, delivery_cost_field_soil,
-                                  delivery_tn_mil, delivery_cost_mil, delivery_cost_mil_clean, delivery_cost_mil_soil,
-                                  1, delivery_cost_tn, delivery_cost_tn_clean, delivery_cost_tn_soil), byrow=T, nrow=3) 
-    rownames(delivery_cost_tab) <- c(values$FTA, values$FTB, values$FTC)
-    colnames(delivery_cost_tab) <- c(values$FTD,values$FTE,values$FTF, values$FTG)
+    ren_factory_p <- root_harvest_tab_p[3,5]
+    root_mass_factory_ha_ren <- root_harvest_tab_p[3,3]
+    root_mass_factory_field_ren <- root_harvest_tab_p[3,4]
+    
+    root_mass_factory_ha_oren <- root_mass_factory_ha_ren * (100 - ren_factory_p) / ren_factory_p
+    root_mass_factory_ha_tot <- root_mass_factory_ha_ren / (ren_factory_p / 100)
+    root_mass_factory_field_oren <- root_mass_factory_field_ren * (100 - ren_factory_p) / ren_factory_p
+    root_mass_factory_field_tot <- root_mass_factory_field_ren / (ren_factory_p / 100)
+    
+    delivery_distance_km_p <- delivery_distance_mil_p*10
+    oren_sek_p <- oren_tab$oren_sek[which(oren_tab$oren_km == delivery_distance_km_p)]
+    
+    sek_oren_tot <- oren_sek_p * root_mass_factory_field_oren
+    sek_tot_tot <- sek_oren_tot + sek_ren_tot
+    
+    sek_oren_ha <- sek_oren_tot / field_size_p
+    sek_ren_ha <- sek_ren_tot / field_size_p
+    sek_tot_ha <- sek_tot_tot / field_size_p
+    
+    sek_oren_tn <- oren_sek_p
+    sek_ren_tn <- sek_ren_tot / root_mass_factory_field_ren
+    sek_tot_tn <- sek_tot_tot / root_mass_factory_field_ren
+    
+    sek_oren_mil <- sek_oren_tot / delivery_distance_mil_p
+    sek_ren_mil <- sek_ren_tot / delivery_distance_mil_p
+    sek_tot_mil <- sek_tot_tot / delivery_distance_mil_p
+    
+    delivery_cost_tab <- matrix(c(
+      root_mass_factory_field_oren, root_mass_factory_field_ren, root_mass_factory_field_tot,
+      root_mass_factory_ha_oren, root_mass_factory_ha_ren, root_mass_factory_ha_tot,
+      delivery_distance_mil_p, delivery_distance_mil_p, delivery_distance_mil_p,
+      sek_oren_tot, sek_ren_tot, sek_tot_tot,
+      sek_oren_ha, sek_ren_ha, sek_tot_ha,
+      sek_oren_tn, sek_ren_tn, sek_tot_tn,
+      sek_oren_mil, sek_ren_mil, sek_tot_mil
+    ), byrow=T, nrow=7) 
+    colnames(delivery_cost_tab) <- c(values$FTA, values$FTB, values$FTC)    
+    rownames(delivery_cost_tab) <- c(values$FTD, values$FTE, values$FTF, values$FTG, values$FTH, values$FTI, values$FTJ)
     delivery_cost_tab
-  }, rownames = T, digits=1
-  )
+  })
+  
   
   # FULL RESULTS TABLE
   
@@ -1237,6 +1273,11 @@ server <- function(input, output, session){
   output$root_harvest_tab <- renderTable({
     root_harvest_tab()
   }, rownames = T)
+  
+  #Summary delivery
+  output$delivery_cost_tab <- renderTable({
+    delivery_cost_tab()
+  }, rownames = T, digits=1)
   
   # Summary price table
   output$summary_tab_output = renderTable({

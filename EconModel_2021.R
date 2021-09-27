@@ -247,7 +247,7 @@ values <- reactiveValues()
     "FAB", "DELIVERY", "LEVERANS",
     "FAC", "Delivery date", "Leveransdatum",
     "FAD", "Distance to deliver (mil)", "Avstånd till fabrik (mil)",
-    "FAE", "Cost for delivery", "Leveranskostnad",
+    "FAE", "Cost for delivery", "Renbetor leveranskostnad (utöver 8 mil)",
     "FAF", "Delivery costs", "Leveranskostnader",
     "FTA", "Dirt", "Orenheter",
     "FTB", "Clean beet", "Renbetor",
@@ -1047,15 +1047,15 @@ server <- function(input, output, session){
     
     sek_oren_ha <- sek_oren_tot / field_size_p
     sek_ren_ha <- sek_ren_tot / field_size_p
-    sek_tot_ha <- sek_oren_tot / field_size_p
+    sek_tot_ha <- sek_tot_tot / field_size_p
     
     sek_oren_tn <- oren_sek_p
     sek_ren_tn <- sek_ren_tot / root_mass_factory_field_ren
-    sek_tot_tn <- sek_oren_tot / root_mass_factory_field_ren
+    sek_tot_tn <- sek_tot_tot / root_mass_factory_field_ren
     
     sek_oren_mil <- sek_oren_tot / delivery_distance_mil_p
     sek_ren_mil <- sek_ren_tot / delivery_distance_mil_p
-    sek_tot_mil <- sek_oren_tot / delivery_distance_mil_p
+    sek_tot_mil <- sek_tot_tot / delivery_distance_mil_p
     
     delivery_cost_tab <- matrix(c(
       root_mass_factory_field_oren, root_mass_factory_field_ren, root_mass_factory_field_tot,
