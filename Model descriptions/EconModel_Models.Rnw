@@ -29,25 +29,56 @@
         0.000 & \text{if date > 30 Nov}
       \end{cases}
     \end{equation}
+    
+    Where:\\
+    \hangindent=1.5cm
+    ST = sen tillväxt (\%-enheter per dygnt)\\
+    p = Pol (\%-enheter)
 
     \subsubsection{Källa}
     An educated guess
 
     \subsubsection{Planerade förbättringar}
-    Build out proper, weather depended growth model, that uses live data from the current year. This will probably follow the work done by the BBRO.
+    Build out a proper, weather depended growth model, that uses live data from the current year. This will probably follow the work done by the BBRO.
   
   %%%%%%%%%%%%%%%%%%%%%%%%%%
   % SEN TILLVÄXT - REN BETOR
   \subsection{SEN TILLVÄXT - REN BETOR}
 
-    \begin{equation}
-      ST_{RB} = 
-    \end{equation}
+    \begin{align}
+      ST_{RB} = & 1.5735e^{-06} \times D^2_{10S} - 2.8177e^{-04} \times D_{10S} + 0.01244\\
+      &\times {STV}
+    \end{align}
+    
+    Where:\\
+    \hangindent=1.5cm
+    ST = sen tillväxt (\% per dygnt)\\
+    RB = ren betor \\
+    $D_{10S}$ = days after 10 September\\
+    STV = Sen tillväxt potential, relativt till median (0.5, 1.25)
 
     \subsubsection{Planerade förbättringar}
+    Build out a proper, weather depended growth model, that uses live data from the current year. This will probably follow the work done by the BBRO.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % UPPTAGNING
+
+\pagebreak
+\section{UPPTAGNING}
+
+\subsection{SPILL}
+
+  \begin{equation}
+  \text{Spill} = 3.804e^{-4} \times RSB^2 + 4.508e^{-2} \times RSB + 0.25
+  \end{equation}
+  
+  Where:\\
+  \hangindent=1.5cm
+  RSB = rotspetsbrot (\% > 2cm)\\
+  
+  \subsubsection{Källa}
+  BBRO med multiplication faktor (x2) enligt erfarenhet inon industri.
+  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % LAGRNING
@@ -62,7 +93,7 @@
   
   Kostand per ton orenheter (approxiamte)*
   
-    \begin{equation}
+  \begin{equation}
     \frac{dSEK_{orenheter}}{dkm} =
     \begin{cases}
       0,841 & \text{km} < 145\\
@@ -76,7 +107,7 @@
   km = kilometer\\
   Baskostnad (1km) = 23,74SEK/tn
   
-  \medskip
+  \subsubsection{Källa}
   *Data is taken from the 2020 price model. The above equations are only approximations. 
   Actual data is taken from the Nordic Sugar "Transportkostand för orenheter" table. 
 
