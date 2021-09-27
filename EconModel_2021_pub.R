@@ -227,7 +227,7 @@ values <- reactiveValues()
     "GTL", "Base price", "Baspris",
     "GTM", "Bonuses", "Bonus",
     "GTN", "Total payment", "Total betalning",
-    
+    "GTO", "Cleanness (%)","Renhet (%)",
     
     "HAA", "SUMMARY TABLE", "SAMMANFATTNING - TAB",
     "HAB", "Restrict data start date to harvest date", "Begränsa data  till upptagningsdatum",
@@ -773,13 +773,13 @@ server <- function(input, output, session){
     harvest_date_p <- input$harvest_date
     delivery_date_p <- input$delivery_date
     
-    root_mass_factory <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
-    root_mass_harvest <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
-    root_mass_grown <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
+    root_mass_factory_ha <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
+    root_mass_harvest_ha <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
+    root_mass_grown_ha <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
     
-    root_mass_factory_field <- root_mass_factory*field_size_p
-    root_mass_harvest_field <- root_mass_harvest*field_size_p
-    root_mass_grown_field <- root_mass_grown*field_size_p
+    root_mass_factory_field <- root_mass_factory_ha*field_size_p
+    root_mass_harvest_field <- root_mass_harvest_ha*field_size_p
+    root_mass_grown_field <- root_mass_grown_ha*field_size_p
     
     pol_factory <- full_tab_p$pol_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
     pol_harvest <- full_tab_p$pol_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
@@ -789,12 +789,17 @@ server <- function(input, output, session){
     sug_harvest <- full_tab_p$sug_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
     sug_grown <- full_tab_p$sug_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
     
+    ren_factory <- full_tab_p$renhet_pp_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
+    ren_harvest <- full_tab_p$renhet_pp_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
+    ren_grown <- full_tab_p$renhet_pp_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
+    
     root_harvest_tab <- matrix(c(sug_grown, sug_harvest, sug_factory,
                                  pol_grown, pol_harvest, pol_factory,
-                                 root_mass_grown, root_mass_harvest, root_mass_factory,
-                                 root_mass_grown_field, root_mass_harvest_field, root_mass_factory_field
+                                 root_mass_grown_ha, root_mass_harvest_ha, root_mass_factory_ha,
+                                 root_mass_grown_field, root_mass_harvest_field, root_mass_factory_field,
+                                 ren_grown, ren_harvest, ren_factory
     ), byrow=F, nrow=3) 
-    colnames(root_harvest_tab) <- c(values$GTA, values$GTB, values$GTC, values$GTD)
+    colnames(root_harvest_tab) <- c(values$GTA, values$GTB, values$GTC, values$GTD, values$GTO)
     rownames(root_harvest_tab) <- c(values$GTE, values$GTF, values$GTG)
     
     root_harvest_tab
