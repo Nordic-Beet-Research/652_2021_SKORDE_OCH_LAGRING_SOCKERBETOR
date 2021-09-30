@@ -298,9 +298,9 @@ values <- reactiveValues()
     "HTC", "Temp. (°C)", " Temp. (°C)",
     "HTD", "Cum. Temp (°Cd)", "Acc. Temp (°Cd)",
     "HTE", "Cum. pol loss (%)", "Acc pol förlust (%)",
-    "HTF", "Pol", "Pol",
-    "HTG", "Root Yield", "Rotskörd",
-    "HTH", "Sugar Yield", "Sockerskörd",
+    "HTF", "Pol", "Pol (%)",
+    "HTG", "Root Yield", "Rotskörd (t/ha)",
+    "HTH", "Sugar Yield", "Sockerskörd (t/ha)",
     "HTI", "Base price - clean tn", "Baspris per ton rena betor",
     "HTJ", "Bonus - clean tn", "Bonus per ton rena betor",
     "HTK", "Payment - clean tn", "Totall betalning per ton rena betor",
@@ -314,6 +314,7 @@ values <- reactiveValues()
     "HTS", "Bonus - field", "Bonus per fält",
     "HTT", "Payment - field", " per fält",
     "HTU", "Cleanness (%)", "Renhet (%)", 
+    "HTV", "Dirt (t/ha)", "Orenheter (t/ha)", 
     
     
     "IAA", "PRODUCTION - CHARTS", "PRODUKTION - DIAGRAM",
@@ -585,8 +586,7 @@ ui <- fluidPage(
              ),
              fluidRow(
                column(12, h4("FÖRBÄTTRINGAR OCH DOKUMENTATION"),
-                "Ser dokument på", tags$a(href="https://github.com/Nordic-Beet-Research/SKORDE_OCH_LAGRING_SOCKERBETOR/blob/30d4b2f6faf02ce1d7f13e83d9c000ac533ac0fc/Model%20descriptions/EconModel_Models.pdf","Github"),
-                "Ser dokument på", tags$a(href="https://github.com/Nordic-Beet-Research/SKORDE_OCH_LAGRING_SOCKERBETOR/blob/0bf023d60da052d255a2bd8b8638df35d6b5d074/Model%20descriptions/EconModel_Models.pdf","Github"),
+                "Ser dokument på", tags$a(href="https://github.com/Nordic-Beet-Research/SKORDE_OCH_LAGRING_SOCKERBETOR/blob/9d26d582ad5c4ebbcdaea1f564e024a10fa782a4/Model%20descriptions/EconModel_Models.pdf","Github"),
                 br(),br(),
                 "Skickar dina förslag till William English: we@nbrf.nu")
              )
@@ -765,7 +765,7 @@ ui <- fluidPage(
              ),
              fluidRow(
                column(6,plotly::plotlyOutput("summary_graph_renhet")),
-               column(6,),
+               column(6,plotly::plotlyOutput("summary_graph_orenhet")),
                style = 'margin-top:30px'
              )
     ),
@@ -773,7 +773,7 @@ ui <- fluidPage(
              fluid = T, style = "padding-top:5px",
              fluidRow(
                column(6,plotly::plotlyOutput("summary_graph_price_ha")),
-               column(6,plotly::plotlyOutput("summary_graph_price_fi"))
+               column(6,plotly::plotlyOutput("summary_graph_price_ha_net"))
              ),
              fluidRow(
                column(6,plotly::plotlyOutput("summary_graph_price_cl")),
@@ -1097,6 +1097,8 @@ server <- function(input, output, session){
     field_size <- input$field_size
     root_harvest <- root_yield_p*field_size
     root_tip_break_pc_p <- input$root_tip_break_pc
+    delivery_distance_mil_p <- input$delivery_distance
+    sek_ren_tot_p <- input$delivery_cost
     
     # calculate a few key parameters
     days_h_s <- round(as.numeric(difftime(delivery_date, harvest_date, units="days")+1))
@@ -1181,7 +1183,7 @@ server <- function(input, output, session){
     #Volume bonus
     if (vol == T) full_tab$price_vol = kr_vol
     
-    #renhet bonus #### FIX FIX FIX FIX ####
+    #renhet bonus
     full_tab$renhet_diff <- full_tab$renhet_pp_cum - (ref_renhet*100)
     full_tab$price_renhet <- full_tab$renhet_diff * kr_renhet
     
@@ -1204,7 +1206,18 @@ server <- function(input, output, session){
     full_tab$price_base_field <- full_tab$price_base_ha*field_size
     full_tab$price_bonus_field <- full_tab$price_bonus_ha*field_size
     full_tab$price_field <- full_tab$price_ha*field_size
+    
+    # Orenheter costs
+    full_tab$mass_tn_ha_cum_oren <- full_tab$mass_tn_cum * (100 - full_tab$renhet_pp_cum) / full_tab$renhet_pp_cum
+    full_tab$cost_ha_cum_oren <- full_tab$mass_tn_ha_cum_oren*(delivery_distance_mil_p*10*0.841+23.74)
 
+    # Leverans costs
+    leverans_sek_ren_ha <- sek_ren_tot_p/field_size
+
+    # Ha prices net delivery costs
+    full_tab$price_bonus_ha_net <- full_tab$price_bonus_clean*full_tab$mass_tn_cum - full_tab$price_TT*full_tab$mass_tn_cum
+    full_tab$price_ha_net <- full_tab$price_clean*full_tab$mass_tn_cum - full_tab$cost_ha_cum_oren - full_tab$price_TT*full_tab$mass_tn_cum
+    
     full_tab
     
     })
@@ -1223,7 +1236,7 @@ server <- function(input, output, session){
     delivery_date <- as.POSIXct(input$delivery_date, tz = "UTC", format = "%Y-%m-%d")
     
     # Define summary table - columns
-    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_tn_cum","sug_cum", "renhet_pp_cum")
+    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_tn_cum","sug_cum", "renhet_pp_cum","mass_tn_ha_cum_oren")
     if("CL" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_clean","price_bonus_clean","price_clean")
     if("DE" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_delivered","price_bonus_delivered","price_delivered")
     if("HA" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_ha","price_bonus_ha","price_ha")
@@ -1257,7 +1270,7 @@ server <- function(input, output, session){
     # input from required inputs
     summary_tab_cols <- input$summary_tab_show
     
-    summary_tab_names <- c(values$HTA, values$HTB, values$HTC, values$HTD, values$HTE, values$HTF, values$HTG, values$HTH, values$HTU)
+    summary_tab_names <- c(values$HTA, values$HTB, values$HTC, values$HTD, values$HTE, values$HTF, values$HTG, values$HTH, values$HTU, values$HTV)
     if("CL" %in% summary_tab_cols) summary_tab_names <- c(summary_tab_names, values$HTI, values$HTJ, values$HTK)
     if("DE" %in% summary_tab_cols) summary_tab_names <- c(summary_tab_names, values$HTL, values$HTM, values$HTN)
     if("HA" %in% summary_tab_cols) summary_tab_names <- c(summary_tab_names, values$HTO, values$HTP, values$HTQ)
@@ -1477,6 +1490,21 @@ server <- function(input, output, session){
             legend.position="bottom")
   })
   
+  output$summary_graph_orenhet <- plotly::renderPlotly({
+    ggplot(summary_tab(), aes(x=date_full)) + 
+      geom_line(aes(y=mass_tn_ha_cum_oren, color = "Orenheter"), size = 1) +
+      geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
+      geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
+      scale_colour_manual("", 
+                          breaks = c("Orenheter"),
+                          values = c("Orenheter"="#1C9C82")) +
+      ylab("Ton/ha") + 
+      xlab(values$IDT) +
+      labs(title = "ORENHETER") +
+      theme(plot.title = element_text(size=15, face="bold.italic", colour = "#4A4C64"), 
+            legend.position="bottom")
+  })
+  
   output$summary_graph_price_ha <- plotly::renderPlotly({
     ggplot(full_tab(), aes(x=date_full)) + 
       geom_line(aes(y = price_base_ha, colour = values$JDA), size = 1) + 
@@ -1489,6 +1517,25 @@ server <- function(input, output, session){
                           values = c("Totalpris"="red3", "Baspris"="#4A4C64", 
                                      "Bonus"="#1C9C82")) +
       labs(title = values$JDF) + 
+      ylab(values$JDE) +
+      xlab(values$JDD) +
+      theme(plot.title = element_text(size=15, face="bold.italic", colour = "#4A4C64"), 
+            legend.position="bottom")
+  })
+  
+  output$summary_graph_price_ha_net <- plotly::renderPlotly({
+    ggplot(full_tab(), aes(x=date_full)) + 
+      geom_line(aes(y = price_base_ha, colour = values$JDA), size = 1) + 
+      geom_line(aes(y = price_bonus_ha_net, colour = values$JDB), size = 1) +
+      geom_line(aes(y = price_ha_net, colour = values$JDC), size = 1) +
+      geom_line(aes(y = cost_ha_cum_oren, colour = "Leverans"), size = 1) +
+      geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
+      geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
+      scale_colour_manual("", 
+                          breaks = c(values$JDA, values$JDB, values$JDC, "Leverans"),
+                          values = c("Totalpris"="red3", "Baspris"="#4A4C64", 
+                                     "Bonus"="#1C9C82", "Leverans" = "orange")) +
+      labs(title = "INTÄKT PER HA NET LEVERANSKOSTNADER UTAN TT-BONUS") + 
       ylab(values$JDE) +
       xlab(values$JDD) +
       theme(plot.title = element_text(size=15, face="bold.italic", colour = "#4A4C64"), 
