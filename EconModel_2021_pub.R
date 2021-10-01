@@ -87,10 +87,10 @@ renhet_loss_mdl$renhet_loss_pp[which(renhet_loss_mdl$renhet_loss_pp >= 0)] <- 0
 renhet_loss_mdl$renhet_loss_pp_cum <- cumsum(renhet_loss_mdl$renhet_loss_pp)
 
 # LEVERANS ORENHETER KOSTNADER
-oren_km <- seq(1,240)
-oren_sek <- c("23.74	24.47	25.19	25.92	26.66	27.38	28.11	28.84	29.56	30.29	31.01	31.74	32.47	33.19	33.92	34.65	35.37	36.1	36.83	37.55	38.28	39	39.73	40.46	41.18	42	42.81	43.63	44.44	45.25	46.08	46.91	47.73	48.56	49.39	50.21	51.04	51.87	52.69	53.52	54.34	55.17	56	56.82	57.65	58.49	59.33	60.17	61.01	61.85	62.68	63.52	64.36	65.2	66.04	66.88	67.72	68.56	69.4	70.24	71.16	72.09	73.02	73.94	74.87	75.81	76.75	77.69	78.63	79.56	80.45	81.34	82.23	83.12	84.01	84.86	85.71	86.57	87.42	88.27	89.12	89.97	90.81	91.66	92.51	93.36	94.22	95.07	95.92	96.76	97.61	98.46	99.3	100.15	101	101.84	102.69	103.55	104.38	105.24	106.09	106.93	107.78	108.63	109.47	110.32	111.17	112.01	112.86	113.71	114.55	115.39	116.23	117.07	117.91	118.75	119.59	120.43	121.27	122.1	122.94	123.78	124.62	125.46	126.3	127.14	127.96	128.79	129.62	130.44	131.27	132.03	132.8	133.56	134.33	135.09	135.85	136.62	137.38	138.15	138.85	139.55	140.25	140.95	141.65	142.29	142.93	143.48	143.94	144.41	144.87	145.33	145.8	146.26	146.72	147.19	147.65	148.11	148.58	149.04	149.5	149.97	150.43	150.89	151.36	151.82	152.28	152.75	153.21	153.67	154.14	154.6	155.06	155.53	155.99	156.45	156.92	157.38	157.84	158.31	158.77	159.23	159.7	160.25	160.8	161.35	161.9	162.45	163	163.55	164.1	164.66	165.21	165.76	166.22	166.68	167.15	167.61	168.07	168.54	169	169.46	169.93	170.39	170.85	171.32	171.78	172.24	172.71	173.17	173.63	174.1	174.56	175.02	175.49	175.95	176.41	176.88	177.34	177.8	178.27	178.73	179.19	179.66	180.12	180.45	180.65	180.85	181.05	181.25	181.45	181.65	181.85	182.05	182.25	182.45	182.65	182.85	183.05	183.25")
-oren_sek <- as.numeric(unlist(strsplit(oren_sek, "\t")))
-oren_tab <- data.frame(oren_km, oren_sek)
+lev_km <- seq(0,240)
+lev_sek <- c("00.00	23.74	24.47	25.19	25.92	26.66	27.38	28.11	28.84	29.56	30.29	31.01	31.74	32.47	33.19	33.92	34.65	35.37	36.1	36.83	37.55	38.28	39	39.73	40.46	41.18	42	42.81	43.63	44.44	45.25	46.08	46.91	47.73	48.56	49.39	50.21	51.04	51.87	52.69	53.52	54.34	55.17	56	56.82	57.65	58.49	59.33	60.17	61.01	61.85	62.68	63.52	64.36	65.2	66.04	66.88	67.72	68.56	69.4	70.24	71.16	72.09	73.02	73.94	74.87	75.81	76.75	77.69	78.63	79.56	80.45	81.34	82.23	83.12	84.01	84.86	85.71	86.57	87.42	88.27	89.12	89.97	90.81	91.66	92.51	93.36	94.22	95.07	95.92	96.76	97.61	98.46	99.3	100.15	101	101.84	102.69	103.55	104.38	105.24	106.09	106.93	107.78	108.63	109.47	110.32	111.17	112.01	112.86	113.71	114.55	115.39	116.23	117.07	117.91	118.75	119.59	120.43	121.27	122.1	122.94	123.78	124.62	125.46	126.3	127.14	127.96	128.79	129.62	130.44	131.27	132.03	132.8	133.56	134.33	135.09	135.85	136.62	137.38	138.15	138.85	139.55	140.25	140.95	141.65	142.29	142.93	143.48	143.94	144.41	144.87	145.33	145.8	146.26	146.72	147.19	147.65	148.11	148.58	149.04	149.5	149.97	150.43	150.89	151.36	151.82	152.28	152.75	153.21	153.67	154.14	154.6	155.06	155.53	155.99	156.45	156.92	157.38	157.84	158.31	158.77	159.23	159.7	160.25	160.8	161.35	161.9	162.45	163	163.55	164.1	164.66	165.21	165.76	166.22	166.68	167.15	167.61	168.07	168.54	169	169.46	169.93	170.39	170.85	171.32	171.78	172.24	172.71	173.17	173.63	174.1	174.56	175.02	175.49	175.95	176.41	176.88	177.34	177.8	178.27	178.73	179.19	179.66	180.12	180.45	180.65	180.85	181.05	181.25	181.45	181.65	181.85	182.05	182.25	182.45	182.65	182.85	183.05	183.25")
+lev_sek <- as.numeric(unlist(strsplit(lev_sek, "\t")))
+lev_tab <- data.frame(lev_km, lev_sek)
 
 # LANGUAGE
 lang_col <<- 3
@@ -267,6 +267,7 @@ values <- reactiveValues()
     "HTU", "Cleanness (%)", "Renhet (%)", 
     "HTV", "Dirt (t/ha)", "Orenheter (t/ha)", 
     
+    
     "IAA", "PRODUCTION - CHARTS", "PRODUKTION - DIAGRAM",
     "IDA", "Cum. sug", "Sockerskörd",
     "IDB", "Sugar yield (t/ha)", "Sockerskörd (t/ha)",
@@ -306,8 +307,8 @@ values <- reactiveValues()
     "JDL", "INCOME PER DELIVERED (17%) TON", "INTÄKT PER TON LEVERERADBETOR (17%)",
     
     
-    "KAA", "COMPARE", "JÄMFÖRA",
-    "KAB", "COMPARE +", "JÄMFÖRA +",
+    "KAA", "COMPARE", "JÄMFÖR",
+    "KAB", "COMPARE +", "JÄMFÖR +",
     "KDA", "Cum. sug", "Acc. sug",
     "KDB", "Sugar yield (t/ha)", "Sockerskörd (t/ha)",
     "KBC", "Date", "Datum",
@@ -639,8 +640,8 @@ ui <- fluidPage(
                    column(2,actionButton("help_delivery", "?"))
                  ),
                  dateInput("delivery_date",isolate(values$FAC),value = "2022-01-15"),
-                 sliderInput("delivery_distance",isolate(values$FAD),min=1,max=20,step=0.1,value=5),
-                 sliderInput("delivery_cost",isolate(values$FAE),min=0,max=200000,value=0)
+                 sliderInput("delivery_distance",isolate(values$FAD),min=1,max=15,step=0.1,value=5)
+                 #sliderInput("delivery_cost",isolate(values$FAE),min=0,max=200000,value=0)
                ),
                mainPanel(
                  column(12, h4(isolate(values$FAF)), tableOutput("delivery_cost_tab"), style = "margin-top: 15px")
@@ -784,9 +785,9 @@ server <- function(input, output, session){
     harvest_date_p <- input$harvest_date
     delivery_date_p <- input$delivery_date
     
-    root_mass_factory_ha <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
-    root_mass_harvest_ha <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
-    root_mass_grown_ha <- full_tab_p$mass_tn_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
+    root_mass_factory_ha <- full_tab_p$mass_t_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
+    root_mass_harvest_ha <- full_tab_p$mass_t_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
+    root_mass_grown_ha <- full_tab_p$mass_t_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
     
     root_mass_factory_field <- root_mass_factory_ha*field_size_p
     root_mass_harvest_field <- root_mass_harvest_ha*field_size_p
@@ -804,13 +805,18 @@ server <- function(input, output, session){
     ren_harvest <- full_tab_p$renhet_pp_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
     ren_grown <- full_tab_p$renhet_pp_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
     
+    oren_factory <- full_tab_p$mass_oren_t_ha_cum[which(full_tab_p$date_full == as.POSIXct(delivery_date_p))]
+    oren_harvest <- full_tab_p$mass_oren_t_ha_cum[which(full_tab_p$date_full == as.POSIXct(harvest_date_p))] 
+    oren_grown <- full_tab_p$mass_oren_t_ha_cum[which(full_tab_p$date_full == (as.POSIXct(harvest_date_p) - 86400))]
+    
     root_harvest_tab <- matrix(c(sug_grown, sug_harvest, sug_factory,
                                  pol_grown, pol_harvest, pol_factory,
                                  root_mass_grown_ha, root_mass_harvest_ha, root_mass_factory_ha,
                                  root_mass_grown_field, root_mass_harvest_field, root_mass_factory_field,
-                                 ren_grown, ren_harvest, ren_factory
+                                 ren_grown, ren_harvest, ren_factory,
+                                 oren_grown, oren_harvest, oren_factory
     ), byrow=F, nrow=3) 
-    colnames(root_harvest_tab) <- c(values$GTA, values$GTB, values$GTC, values$GTD, values$GTO)
+    colnames(root_harvest_tab) <- c(values$GTA, values$GTB, values$GTC, values$GTD, values$GTO, "Orenheter (t/ha)")
     rownames(root_harvest_tab) <- c(values$GTE, values$GTF, values$GTG)
     
     root_harvest_tab
@@ -977,7 +983,6 @@ server <- function(input, output, session){
   
   delivery_cost_tab <- reactive({
     root_harvest_tab_p <- data.frame(root_harvest_tab())
-    sek_ren_tot <- input$delivery_cost
     delivery_distance_mil_p <- input$delivery_distance
     field_size_p <- input$field_size
     
@@ -990,28 +995,35 @@ server <- function(input, output, session){
     root_mass_factory_field_oren <- root_mass_factory_field_ren * (100 - ren_factory_p) / ren_factory_p
     root_mass_factory_field_tot <- root_mass_factory_field_ren / (ren_factory_p / 100)
     
-    delivery_distance_km_p <- delivery_distance_mil_p*10
-    oren_sek_p <- oren_tab$oren_sek[which(oren_tab$oren_km == delivery_distance_km_p)]
+    delivery_distance_oren_km <- delivery_distance_mil_p*10
+    lev_oren_sek <- lev_tab$lev_sek[which(lev_tab$lev_km == delivery_distance_oren_km)]
     
-    sek_oren_tot <- oren_sek_p * root_mass_factory_field_oren
+    delivery_distance_ren_mil <- round(delivery_distance_mil_p - 8,1)
+    delivery_distance_ren_mil <- ifelse(delivery_distance_ren_mil <= 0, 0, delivery_distance_ren_mil)
+    delivery_distance_ren_km <- delivery_distance_ren_mil * 10
+    lev_ren_sek <- lev_tab$lev_sek[which(lev_tab$lev_km == delivery_distance_ren_km)]
+    
+    sek_oren_tot <- lev_oren_sek * root_mass_factory_field_oren
+    sek_ren_tot <- lev_ren_sek * root_mass_factory_field_ren
     sek_tot_tot <- sek_oren_tot + sek_ren_tot
     
     sek_oren_ha <- sek_oren_tot / field_size_p
     sek_ren_ha <- sek_ren_tot / field_size_p
     sek_tot_ha <- sek_tot_tot / field_size_p
     
-    sek_oren_tn <- oren_sek_p
+    sek_oren_tn <- lev_oren_sek
     sek_ren_tn <- sek_ren_tot / root_mass_factory_field_ren
     sek_tot_tn <- sek_tot_tot / root_mass_factory_field_ren
     
     sek_oren_mil <- sek_oren_tot / delivery_distance_mil_p
-    sek_ren_mil <- sek_ren_tot / delivery_distance_mil_p
+    sek_ren_mil <- sek_ren_tot / delivery_distance_ren_mil
+    sek_ren_mil <- ifelse(is.na(sek_ren_mil), 0, sek_ren_mil)
     sek_tot_mil <- sek_tot_tot / delivery_distance_mil_p
     
     delivery_cost_tab <- matrix(c(
       root_mass_factory_field_oren, root_mass_factory_field_ren, root_mass_factory_field_tot,
       root_mass_factory_ha_oren, root_mass_factory_ha_ren, root_mass_factory_ha_tot,
-      delivery_distance_mil_p, delivery_distance_mil_p, delivery_distance_mil_p,
+      delivery_distance_mil_p, delivery_distance_ren_mil, delivery_distance_mil_p,
       sek_oren_tot, sek_ren_tot, sek_tot_tot,
       sek_oren_ha, sek_ren_ha, sek_tot_ha,
       sek_oren_tn, sek_ren_tn, sek_tot_tn,
@@ -1122,10 +1134,10 @@ server <- function(input, output, session){
     
     ## Total daily mass change (kg)
     full_tab$mass_loss_kg_rel_day0 <- full_tab$clamp_mass_loss_kg_rel_day0 + full_tab$LSG_mass_loss_kg_rel_day0 - full_tab$harvest_mass_loss
-    full_tab$mass_tn_cum <- (root_yield_p - full_tab$mass_loss_kg_rel_day0)*full_tab$renhet_pc_cum
+    full_tab$mass_t_cum <- (root_yield_p - full_tab$mass_loss_kg_rel_day0)*full_tab$renhet_pc_cum
     
     ## SUGAR YIELD
-    full_tab$sug_cum <- full_tab$pol_cum/100*full_tab$mass_tn_cum
+    full_tab$sug_cum <- full_tab$pol_cum/100*full_tab$mass_t_cum
     
     #TT bonus
     full_tab$price_TT[full_tab$date_full < as.POSIXct(cover_date)+7] <- 0
@@ -1137,36 +1149,41 @@ server <- function(input, output, session){
     full_tab$renhet_diff <- full_tab$renhet_pp_cum - (ref_renhet*100)
     full_tab$price_renhet <- full_tab$renhet_diff * kr_renhet
     
+    # Orenheter costs
+    full_tab$mass_oren_t_ha_cum <- full_tab$mass_t_cum * (100 - full_tab$renhet_pp_cum) / full_tab$renhet_pp_cum
+    full_tab$cost_lev_oren_ha_cum <- full_tab$mass_oren_t_ha_cum*(delivery_distance_mil_p*10*0.841+23.74)
+    
+    # Leverans costs
+    full_tab$cost_lev_ren_ha_cum <- full_tab$mass_t_cum*((delivery_distance_mil_p - 8)*10*0.841+23.74)
+    full_tab$cost_lev_ren_ha_cum[which(full_tab$cost_lev_ren_ha_cum < 0)] <- 0
+    full_tab$cost_lev_ha_cum <- (full_tab$cost_lev_oren_ha_cum + full_tab$cost_lev_ren_ha_cum)*-1
+    
     # Clean prices
     full_tab$price_base_clean <- kr_tonne+kr_tonne*full_tab$pol_factor/100
     full_tab$price_bonus_clean <- (full_tab$price_early + full_tab$price_late + full_tab$price_TT + full_tab$price_vol + full_tab$price_renhet)
     full_tab$price_clean <- full_tab$price_base_clean +  full_tab$price_bonus_clean
+    full_tab$cost_lev_t_clean_cum <- full_tab$cost_lev_ha_cum / full_tab$mass_t_cum
     
     # Delivered prices
     full_tab$price_base_delivered <- full_tab$price_base_clean*(full_tab$renhet_pp_cum/100)
     full_tab$price_bonus_delivered <- full_tab$price_bonus_clean*(full_tab$renhet_pp_cum/100)
     full_tab$price_delivered <- full_tab$price_clean*(full_tab$renhet_pp_cum/100)
+    full_tab$cost_lev_t_delivered_cum <- full_tab$cost_lev_t_clean_cum*(full_tab$renhet_pp_cum/100)
     
     # Ha prices
-    full_tab$price_base_ha <- full_tab$price_base_clean*full_tab$mass_tn_cum
-    full_tab$price_bonus_ha <- full_tab$price_bonus_clean*full_tab$mass_tn_cum
-    full_tab$price_ha <- full_tab$price_clean*full_tab$mass_tn_cum
+    full_tab$price_base_ha <- full_tab$price_base_clean*full_tab$mass_t_cum
+    full_tab$price_bonus_ha <- full_tab$price_bonus_clean*full_tab$mass_t_cum
+    full_tab$price_ha <- full_tab$price_clean*full_tab$mass_t_cum
     
     # Field prices
     full_tab$price_base_field <- full_tab$price_base_ha*field_size
     full_tab$price_bonus_field <- full_tab$price_bonus_ha*field_size
     full_tab$price_field <- full_tab$price_ha*field_size
+    full_tab$cost_lev_field_cum <- full_tab$cost_lev_ha_cum*field_size
     
-    # Orenheter costs
-    full_tab$mass_tn_ha_cum_oren <- full_tab$mass_tn_cum * (100 - full_tab$renhet_pp_cum) / full_tab$renhet_pp_cum
-    full_tab$cost_ha_cum_oren <- full_tab$mass_tn_ha_cum_oren*(delivery_distance_mil_p*10*0.841+23.74)
-    
-    # Leverans costs
-    leverans_sek_ren_ha <- sek_ren_tot_p/field_size
-    
-    # Ha prices net delivery costs
-    full_tab$price_bonus_ha_net <- full_tab$price_bonus_clean*full_tab$mass_tn_cum - full_tab$price_TT*full_tab$mass_tn_cum
-    full_tab$price_ha_net <- full_tab$price_clean*full_tab$mass_tn_cum - full_tab$cost_ha_cum_oren - full_tab$price_TT*full_tab$mass_tn_cum
+    # Ha prices net of delivery and without the TopTex Bonus
+    full_tab$price_bonus_ha_net <- full_tab$price_bonus_clean*full_tab$mass_t_cum - full_tab$price_TT*full_tab$mass_t_cum
+    full_tab$price_ha_net <- full_tab$price_clean*full_tab$mass_t_cum + full_tab$cost_lev_ha_cum - full_tab$price_TT*full_tab$mass_t_cum
     
     full_tab
     
@@ -1186,7 +1203,7 @@ server <- function(input, output, session){
     delivery_date <- as.POSIXct(input$delivery_date, tz = "UTC", format = "%Y-%m-%d")
     
     # Define summary table - columns
-    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_tn_cum","sug_cum", "renhet_pp_cum","mass_tn_ha_cum_oren")
+    summary_tab_show <- c("date_full", "location", "temp_clamp_p", "cum_temp", "pol_loss_pc_cum", "pol_cum","mass_t_cum","sug_cum", "renhet_pp_cum","mass_oren_t_ha_cum")
     if("CL" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_clean","price_bonus_clean","price_clean")
     if("DE" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_delivered","price_bonus_delivered","price_delivered")
     if("HA" %in% summary_tab_cols) summary_tab_show <- c(summary_tab_show, "price_base_ha","price_bonus_ha","price_ha")
@@ -1240,13 +1257,13 @@ server <- function(input, output, session){
     delivery_date <- as.POSIXct(input$delivery_date, tz = "UTC", format = "%Y-%m-%d")
     summary_final_tab <- data.frame(full_tab())
     summary_final_tab <- summary_final_tab[which(summary_final_tab$date_full == delivery_date),]
-    summary_final_tab <- matrix(summary_final_tab[c("price_base_ha","price_bonus_ha","price_ha",
-                                                    "price_base_field","price_bonus_field","price_field",
-                                                    "price_base_delivered","price_bonus_delivered","price_delivered",
-                                                    "price_base_clean","price_bonus_clean","price_clean")],
+    summary_final_tab <- matrix(summary_final_tab[c("price_base_ha","price_bonus_ha","price_ha","cost_lev_ha_cum",
+                                                    "price_base_field","price_bonus_field","price_field","cost_lev_field_cum",
+                                                    "price_base_delivered","price_bonus_delivered","price_delivered","cost_lev_t_delivered_cum",
+                                                    "price_base_clean","price_bonus_clean","price_clean","cost_lev_t_clean_cum")],
                                 byrow=T,nrow=4)
     rownames(summary_final_tab) <- c(values$GTH, values$GTI,values$GTJ, values$GTK)
-    colnames(summary_final_tab) <- c(values$GTL, values$GTM, values$GTN)
+    colnames(summary_final_tab) <- c(values$GTL, values$GTM, values$GTN, "Leveranskostnader")
     
     summary_final_tab
     
@@ -1396,7 +1413,7 @@ server <- function(input, output, session){
   
   output$summary_graph_mass <- plotly::renderPlotly({
     ggplot(summary_tab(), aes(x=date_full)) + 
-      geom_line(aes(y=mass_tn_cum, color = values$IDJ), size = 1) +
+      geom_line(aes(y=mass_t_cum, color = values$IDJ), size = 1) +
       geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
       geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
       scale_colour_manual("", 
@@ -1442,7 +1459,7 @@ server <- function(input, output, session){
   
   output$summary_graph_orenhet <- plotly::renderPlotly({
     ggplot(summary_tab(), aes(x=date_full)) + 
-      geom_line(aes(y=mass_tn_ha_cum_oren, color = "Orenheter"), size = 1) +
+      geom_line(aes(y=mass_oren_t_ha_cum, color = "Orenheter"), size = 1) +
       geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
       geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
       scale_colour_manual("", 
@@ -1478,7 +1495,7 @@ server <- function(input, output, session){
       geom_line(aes(y = price_base_ha, colour = values$JDA), size = 1) + 
       geom_line(aes(y = price_bonus_ha_net, colour = values$JDB), size = 1) +
       geom_line(aes(y = price_ha_net, colour = values$JDC), size = 1) +
-      geom_line(aes(y = cost_ha_cum_oren, colour = "Leverans"), size = 1) +
+      geom_line(aes(y = cost_lev_ha_cum, colour = "Leverans"), size = 1) +
       geom_vline(xintercept = as.numeric(delivery_date), linetype="dotted") +
       geom_vline(xintercept = as.numeric(harvest_date), linetype="dotted") +
       scale_colour_manual("", 
