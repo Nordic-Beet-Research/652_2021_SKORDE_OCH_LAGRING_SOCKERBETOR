@@ -10,6 +10,12 @@
 
 \maketitle
 
+\begin{figure}[ht!]
+\centering
+\includegraphics[width = 1\textwidth]{C:/Dropbox/NBR/80. PhD/699 Side Projects/652-Economic_model/clone/SKORDE_OCH_LAGRING_SOCKERBETOR/www/NBR_RGB.png}
+\label{NBR_logo}
+\end{figure}
+
 \pagebreak
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,7 +28,7 @@
   \subsection{SEN TILLVÄXT - POL}
 
     \begin{equation}
-      ST_P = 
+      frac{dST_P}{dD} = 
       \begin{cases}
         0.010 & \text{if date < 15 Nov}\\
         0.005 & \text{if date $\geq$ 15 Nov and $\leq$ 30 Nov}\\
@@ -33,7 +39,8 @@
     Where:\\
     \hangindent=1.5cm
     ST = sen tillväxt [\%-enheter per dygnt]\\
-    p = Pol
+    P = Pol\\
+    D = dygnt
 
     \subsubsection{Källa}
     An educated guess
@@ -46,7 +53,7 @@
   \subsection{SEN TILLVÄXT - REN BETOR}
 
     \begin{align}
-      ST_{RB} = & 1.5735e^{-06} \times D^2_{10S} - 2.8177e^{-04} \times D_{10S} + 0.01244\\
+      \frac{dST_{RB}}{dD} = & 1.5735e^{-06} \times D^2_{10S} - 2.8177e^{-04} \times D_{10S} + 0.01244\\
       &\times {STV}
     \end{align}
     
@@ -55,6 +62,7 @@
     ST = sen tillväxt [\% per dygnt]\\
     RB = ren betor \\
     $D_{10S}$ = days after 10 September\\
+    D = dygnt\\
     STV = Sen tillväxt potential, relativt till median (0.5, 1.25)
 
     \subsubsection{Planerade förbättringar}
@@ -78,7 +86,7 @@
   RSB = rotspetsbrot [\% > 2cm]\\
   
   \subsubsection{Källa}
-  BBRO med multiplicationfaktor (x2) enligt erfarenhet inon industri.
+  BBRO Sugar Beet Reference Book 2018, med multiplicationfaktor (x2) enligt erfarenhet inon industri.
   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,7 +127,9 @@
   Baskostnad (1km) = 23,74SEK/tn
   
   \subsubsection{Källa}
-  *Data is taken from the 2020 price model. The above equations are only approximations. These approximations are used in most of the model. 
+  *Data is taken from the 2020 price model. The above equations are only approximations. These approximations are used in most of the model.
+  
+  \medskip
   Actual cost data is taken from the Nordic Sugar "Transportkostand för orenheter" table. This data is presented in the Leveranskostnader table in the Leverans tab.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
