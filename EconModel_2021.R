@@ -2,6 +2,7 @@
 #
 # Swedish sugar beets economic model
 # Will English, 2021-03-18
+# Version 2021-11-11
 # FIXES: Per truck, per ha into the payment schedule. Add in price model from any year
 #
 ########################################
@@ -15,7 +16,7 @@
 
 {
  # -------------------------------------------
- snapshot_date = "2021-03-18"
+ snapshot_date = "2021-11-01"
  options("repos" = paste0("https://mran.revolutionanalytics.com/snapshot/", snapshot_date))
  # -------------------------------------------
 
@@ -28,9 +29,9 @@
 
  # R packages
  # -------------------------------------------
- Rpackages_version = c("shiny_1.6.0", "plotly_4.9.3", "sets_1.0-18", 
-                       "ggplot2_3.3.3", "reshape2_1.4.4", "TTR_0.24.2","shinyWidgets_0.6.0")
- path_Rpackages = "C:/R packages_404"
+ Rpackages_version = c("shiny_1.7.1", "plotly_4.10.0", "sets_1.0-19", 
+                       "ggplot2_3.3.5", "reshape2_1.4.4", "TTR_0.24.2","shinyWidgets_0.6.2")
+ path_Rpackages = "C:/R packages_412"
  # -------------------------------------------
  
  # -------------------------------------------
@@ -40,7 +41,7 @@
  # version check and load packages
  # -------------------------------------------
  # R version check
- if(sessionInfo()$R.version$version.string != "R version 4.0.4 (2021-02-15)") stop("R.version must be 4.0.4 (2021-02-15)")
+ if(sessionInfo()$R.version$version.string != "R version 4.1.2 (2021-11-01)") stop("R.version must be 4.1.2 (2021-11-01)")
 
  # install packages
  Rpack = sapply(strsplit(Rpackages_version, "_", fixed = T), FUN = function(x) x[1])
